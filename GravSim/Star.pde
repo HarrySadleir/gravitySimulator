@@ -1,4 +1,4 @@
-class Star { //<>//
+class Star {
 
   // The stars coordinates, velocity and accelerations in m, m/s, and m/s^2 respectively.
   private PVector pos;
@@ -8,16 +8,24 @@ class Star { //<>//
   // The stars effective mass, i.e. sqrt(G)*M, where G is the gravitational constant
   private float eM;
   private float r;
+  
+  ArrayList<PVector> points;
+  
+  color col;
 
   // Create a new Star variable with given pos, vel, and mass. Set r proportional to m^(1/3)
-  public Star(float x, float y, float z, float vx, float vy, float vz, float eM) {
+  public Star(float x, float y, float z, float vx, float vy, float vz, float eM, color col) {
     this.pos = new PVector(x, y, z);
     this.vel = new PVector(vx, vy, vz);
     this.acc = new PVector(0, 0, 0);
 
     this.eM = eM;
+    
+    this.col = col;
 
     r = 3*pow(eM, 1.0/3);
+    
+    points = new ArrayList<PVector>();
   }
 
   // display a sphere of radius r at position this.pos
@@ -25,11 +33,20 @@ class Star { //<>//
     pushMatrix();
 
     translate(pos.x, pos.y, pos.z);
-    fill(255);
-    stroke(255);
+    fill(col);
+    stroke(col);
     sphere(r);
 
     popMatrix();
+    
+    noFill();
+    stroke(col);
+    strokeWeight(2);
+    beginShape();
+    for(PVector p : this.points) {
+      vertex(p.x, p.y, p.z);
+    }
+    endShape();
   }
 
 
@@ -57,6 +74,9 @@ class Star { //<>//
   // update the star's position
   public void updatePos() {
     this.pos.add(PVector.div(this.vel, 30));
+    
+    this.points.add(this.pos.copy());
+    if(this.points.size() > 1000) points.remove(0);
   }
 
   // ----------------------helper functions---------------------
